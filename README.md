@@ -1,185 +1,262 @@
-# desafio-backend-05-pdv
+# Desafio Módulo 5 - Api para PDV
 
-![](https://i.imgur.com/xG74tOh.png)
+Este é o resultado do último desafio do curso de Desenvolvimento de Software com foco em Backend da [Cubos Academy](https://cubos.academy/cursos/desenvolvimento-de-software).
 
-# Desafio Módulo 5 - Backend
+## Descrição 
+Bem-vindo à API PDV desenvolvida para facilitar a gestão de Frente de Caixa em pequenos comércios. Essa API permite aos usuários realizar operações como cadastrar produtos, efetuar pedidos e gerenciar seu inventário de maneira eficiente.
 
-Seja bem vindo(a) ao desafio do módulo 5.
-
-Sua tarefa como desenvolvedor(a) será criar uma API para um PDV (Frente de Caixa). Esse será um projeto piloto, ou seja, no futuro outras funcionalidades serão implementadas.
-
-**Importante 1: Sempre que a validação de uma requisição falhar, responda com código de erro e mensagem adequada à situação, ok?**
-
-**Importante 2: Para endpoints de cadastro/atualização os objetos de requisição devem conter as propriedades equivalentes as colunas das tabelas.**
-
-**Exemplo:**
-
-```javascript
-// Corpo da requisição para cadastro de usuário (body)
-{
-    "nome": "José",
-    "email": "jose@email.com",
-    "senha": "jose"
-}
-```
-
-**ATENÇÃO: Todos os endpoints deverão atender os requisitos citados acima.**
-
-## **Banco de dados**
-
-Você precisa criar um Banco de Dados PostgreSQL chamado `pdv`.
-
-**IMPORTANTE: Deverá ser criado no projeto o arquivo SQL que deverá ser o script contendo os comandos de criação das tabelas respeitando os nomes das tabelas e colunas respectivamente, além de, conter os comandos para a inserção das categorias que devem ser previamente cadastradas (estão citadas na 1ª Sprint no item Listar Categorias).**
-
-## **Requisitos obrigatórios**
-
-- A API a ser criada deverá acessar o banco de dados a ser criado `pdv` para persistir e manipular os dados de categorias, clientes, pedidos, produtos e usuários utilizados pela aplicação.
-- O campo id das tabelas no banco de dados deve ser auto incremento, chave primária e não deve permitir edição uma vez criado.
-- Qualquer valor monetário deverá ser representado em centavos (Ex.: R$ 10,00 reais = 1000)
-
-## **Status Codes**
-
-Abaixo, listamos os possíveis **_status codes_** esperados como resposta da API.
-
-```javascript
-// 200 (OK) = requisição bem sucedida
-// 201 (Created) = requisição bem sucedida e algo foi criado
-// 204 (No Content) = requisição bem sucedida, sem conteúdo no corpo da resposta
-// 400 (Bad Request) = o servidor não entendeu a requisição pois está com uma sintaxe/formato inválido
-// 401 (Unauthorized) = o usuário não está autenticado (logado)
-// 403 (Forbidden) = o usuário não tem permissão de acessar o recurso solicitado
-// 404 (Not Found) = o servidor não pode encontrar o recurso solicitado
-// 500 (Internal Server Error) = erro inesperado do servidor
-```
+---
 
 <details>
-<summary>1ª Sprint</summary>
-<br>
+<summary>Endpoints</summary>
 
+##### Relação de endpoints: 
+<div style="margin-left: 2rem;" >
 <details>
-<summary><b>Banco de Dados</b></summary>
-<br>
-
-Crie as seguintes tabelas e colunas abaixo:
-
-**ATENÇÃO! Os nomes das tabelas e das colunas a serem criados devem seguir exatamente os nomes listados abaixo.**
-
-- usuarios
-  - id
-  - nome
-  - email (campo único)
-  - senha
-- categorias
-  - id
-  - descricao
-
-</details>
-
-<details>
-<summary><b>Listar categorias</b></summary>
-
-#### `GET` `/categoria`
-
-Essa é a rota que será chamada quando o usuário quiser listar todas as categorias cadastradas.
-
-As categorias a seguir precisam ser previamente cadastradas para que sejam listadas no endpoint de listagem das categorias.
-
-## **Categorias**
-
-- Informática
-- Celulares
-- Beleza e Perfumaria
-- Mercado
-- Livros e Papelaria
-- Brinquedos
-- Moda
-- Bebê
-- Games
-
-</details>
-
-<details>
-<summary><b>Cadastrar usuário</b></summary>
+<summary>Usuários</summary>
 
 #### `POST` `/usuario`
 
-Essa é a rota que será utilizada para cadastrar um novo usuário no sistema.
+- Cadastra um novo usuário no sistema.
+- Campos obrigatórios:
+    - nome
+    - email (único)
+    - senha
+- Entrada pelo body da requisição, em formato json. 
 
-Critérios de aceite:
-
-    - Validar os campos obrigatórios:
-        - nome
-        - email
-        - senha
-    - A senha deve ser criptografada utilizando algum algoritmo de criptografia confiável.
-    - O campo e-mail no banco de dados deve ser único para cada registro, não permitindo dois usuários possuírem o mesmo e-mail.
-
-</details>
-
-<details>
-<summary><b>Efetuar login do usuário</b></summary>
 
 #### `POST` `/login`
 
-Essa é a rota que permite o usuário cadastrado realizar o login no sistema.
+- Login no sistema de usuário cadastrado.
+- Entrada dos dados pelo body da requisição, em formato json. 
 
-Critérios de aceite:
+> Um token será retornado no body, e será utilizado para acessar as demais rotas via Bearer Token.
 
-    - Validar se o e-mail e a senha estão corretos para o usuário em questão.
-    - Gerar um token de autenticação para o usuário.
-
-</details>
-
----
-
-## **ATENÇÃO**: Todas as funcionalidades (endpoints) a seguir, a partir desse ponto, deverão exigir o token de autenticação do usuário logado, recebendo no header com o formato Bearer Token. Portanto, em cada funcionalidade será necessário validar o token informado.
-
----
-
-<details>
-<summary><b>Detalhar perfil do usuário logado</b></summary>
 
 #### `GET` `/usuario`
 
-Essa é a rota que permite o usuário logado a visualizar os dados do seu próprio perfil, de acordo com a validação do token de autenticação.
+- Permite o usuário logado a visualizar os dados do seu próprio perfil
+- Os dados do usuário apresentados são referentes ao token de autenticação fornecido no Bearer Token.
 
-</details>
-
-<details>
-<summary><b>Editar perfil do usuário logado</b></summary>
 
 #### `PUT` `/usuario`
 
-Essa é a rota que permite o usuário logado atualizar informações de seu próprio cadastro, de acordo com a validação do token de autenticação.
+- Atualiza as informações do próprio usuário logado.
+- Entrada dos dados pelo body da requisição, em formato json. 
+- Referente ao usuário cujo token de autenticação foi fornecido no Bearer Token.
 
-Critérios de aceite:
-
-    - Validar os campos obrigatórios:
-        - nome
-        - email
-        - senha
-    - A senha deve ser criptografada utilizando algum algoritmo de criptografia confiável.
-    - O campo e-mail no banco de dados deve ser único para cada registro, não permitindo dois usuários possuírem o mesmo e-mail.
-
+<br>
 </details>
 
 <details>
-<summary><b>Efetuar deploy da aplicação</b></summary>
+<summary>Produtos</summary>
+
+#### `GET` `/categoria`
+
+- Listar todas as categorias de produtos cadastradas.
+- As categorias cadastradas são as seguintes: 
+    - 1 - Informática
+    - 2 - Celulares
+    - 3 - Beleza e Perfumaria
+    - 4 - Mercado
+    - 5 - Livros e Papelaria
+    - 6 - Brinquedos
+    - 7 - Moda
+    - 8 - Bebê
+    - 9 - Games
+
+#### `POST` `/produto`
+
+- Permite o usuário logado cadastrar um novo produto no sistema.
+- Campos obrigatórios:
+    - descricao
+    - quantidade_estoque
+    - valor (em centavos)
+    - categoria_id ( valor do id da [categoria](#get-categoria)).
+- Entrada dos dados pelo body da requisição, em formato json. 
+
+#### `PUT` `/produto/:id`
+
+- Permite o usuário logado atualizar as informações de um produto cadastrado.
+- Campos obrigatórios:
+    -   descricao
+    -   quantidade_estoque
+    -   valor (em centavos)
+    -   categoria_id ( valor do id da [categoria](#get-categoria)).
+- Entrada dos dados pelo body da requisição, em formato json. 
+
+#### `GET` `/produto`
+
+- Lista para o usuário logado todos os produtos cadastrados.
+- Permite um parâmetro do tipo query **categoria_id** que filtra os produtos por categoria (veja [aqui](#get-categoria)).
+- Caso nenhum valor de **categoria_id** seja fornecido, todos os produtos serão listados.
+- Saida pelo body em formato json.
+
+
+#### `GET` `/produto/:id`
+
+- Apresenta ao usuário os detalhes de um produto cadastrado em específico, identificado pelo parâmetro de rota **id**.  
+
+
+#### `DELETE` `/produto/:id`
+
+- Exclui o produto cadastrado, identificado pelo parâmetro de rota **id**.  
+
+<br>
+</details>
+
+
+<details>
+<summary>Clientes</summary>
 <br>
 
-Fazer deploy do projeto e disponibilizar a URL.
+#### `POST` `/cliente`
+
+- Permite o usuário logado cadastrar um novo cliente no sistema.
+- Campos obrigatórios:
+    - nome
+    - email (único)
+    - cpf (único)
+
+- Entrada dos dados pelo body da requisição, em formato json. 
+
+#### `PUT` `/cliente/:id`
+
+- Atualiza os dados de um cliente cadastrado, identificado pelo parâmetro de rota **id**.
+- Campos obrigatórios:
+    - nome
+    - email (único)
+    - cpf (único)
+- Entrada dos dados pelo body da requisição, em formato json. 
+
+
+#### `GET` `/cliente`
+
+- Listar todos os clientes cadastrados.
+
+>
+
+#### `GET` `/cliente/:id`
+
+- Retorna os detalhes de um dos clientes cadastrados.  
+- Cliente identificado pelo parâmetro de rota *id*
+
+<br>
+</details>
+
+<details>
+<summary>Pedidos</summary>
+<br>
+
+#### `POST` `/pedido`
+
+- Cadastra um novo pedido no sistema.
+- Cada pedido deverá conter ao menos um produto vinculado.
+- A concluir um pedido, um e-mail é enviado para o cliente.
+- Campos obrigatórios:
+    -   cliente_id
+    -   pedido_produtos
+        -   produto_id
+        -   quantidade_produto
+- Entrada dos dados pelo body da requisição, em formato json.
+
+
+#### `GET` `/pedido`
+
+- Lista todos os pedidos cadastrados.
+- Permite o uso de um parâmetro do tipo query **cliente_id** o qual filtra os edidos por clientes.
+- Caso o **cliente_id** não seja informado, todos os pedidos cadastrados são retornados.
+- Resposta pelo body em formato json
+
+</details>
+</div>
 
 </details>
 
-</details>
+---
 
-## Aulas úteis:
+## Funcionalidades
 
--   [Revisão](https://aulas.cubos.academy/turma/cafbd2d1-e907-49e5-b7fa-48df482214d8/aulas/4457a63a-c440-431c-9bb2-97b022630de2)
--   [Git e fluxo de trabalho em equipe](https://aulas.cubos.academy/turma/cafbd2d1-e907-49e5-b7fa-48df482214d8/aulas/5a566329-5dbc-4a36-8beb-71ce9d66d870)
--   [Deploy](https://aulas.cubos.academy/turma/cafbd2d1-e907-49e5-b7fa-48df482214d8/aulas/2fde8bfd-4a7f-4727-a6e0-37450f1a0b74)
--   [Envio de e-mails](https://aulas.cubos.academy/turma/cafbd2d1-e907-49e5-b7fa-48df482214d8/aulas/2e3de385-27b7-4bec-9f16-203a941d4016)
--   [Validações e boas práticas](https://aulas.cubos.academy/turma/cafbd2d1-e907-49e5-b7fa-48df482214d8/aulas/2f8c5cfd-421e-433a-b886-c2fc3481d67b)
--   [Upload de arquivos](https://aulas.cubos.academy/turma/cafbd2d1-e907-49e5-b7fa-48df482214d8/aulas/c3c33767-a254-41ee-ad79-6f48414dcf62)
+1. Cadastrar Usuário
+2. Fazer Login
+3. Detalhar Perfil do Usuário Logado
+4. Editar Perfil do Usuário Logado
+5. Listar Categorias
+6. Cadastrar Produto
+7. Editar Dados do Produto
+8. Listar Produtos
+9. Detalhar Produto
+10. Excluir Produto
+11. Cadastrar Cliente
+12. Editar Dados do Cliente
+13. Listar Clientes
+14. Detalhar Cliente
+15. Cadastrar Pedido
+16. Listar Pedidos
 
-###### tags: `back-end` `módulo 5` `nodeJS` `PostgreSQL` `API REST` `desafio`
+---
+
+## Como executar o projeto
+
+⚠️ Para a execução do projeto, é necessário ter o [Node.js](https://nodejs.org/en) instalado em sua máquina.
+
+1) Faça um clone do projeto
+
+```bash
+git clone git@github.com:bruna-rferreira/sistema-PDV.git
+```
+
+2) Abra o diretório do projeto
+
+```bash
+cd sistema-PDV
+```
+
+3) Instale as dependências utilizando o comando:
+
+```bash
+npm i
+```
+
+| Dependências  | Versão |
+| :------------- | ------- |
+| Express        | 4.18.2  |
+| Nodemon        | 3.0.1   |
+| PG             | 8.11.3  |
+| Dotenv         | 16.3.1  |
+| Json Web Token | 9.0.2   |
+| Knex           | 3.0.1   |
+| Joi            | 17.11.0 |
+| Cors           | 2.8.5   |
+| Bcrypt         | 5.1.1   |
+| Aws sdk        | 2.1479.0|
+| Handlebars     | 4.7.8  |
+| Nodemailer     | 6.9.7  |
+
+4) Inicialize o servidor local:
+
+```bash
+npm run dev
+```
+
+---
+
+## Tecnologias Utilizadas
+
+[![My Skills](https://skillicons.dev/icons?i=js,nodejs,beekeeper,express,git,github,postgres)](https://skillicons.dev)
+
+---
+
+## Autoras
+
+[Marcela Linhares](https://www.linkedin.com/in/marcelagabilan/)
+
+[Bruna Ferreira](https://www.linkedin.com/in/brunarodferreira/)
+
+[Debora Francislayne](https://www.linkedin.com/in/debora-francislayne-silva1/)
+
+[Karolayne Arantes](https://www.linkedin.com/in/karolayne-arantes/)
+
+[Thais Paixão](https://www.linkedin.com/in/tha%C3%ADs-paix%C3%A3o-742932141/)
+
+
